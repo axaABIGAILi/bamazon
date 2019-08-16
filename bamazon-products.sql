@@ -8,8 +8,8 @@ CREATE TABLE products (
     product_name VARCHAR(30),
     department_name VARCHAR(30),
     price INTEGER,
-    stock_quantity INTEGER
-    PRIMARY KEY (item_id)
+    stock_quantity INTEGER,
+    PRIMARY KEY(item_id)
 );
 
 INSERT products (product_name, department_name, price, stock_quantity)
