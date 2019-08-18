@@ -70,11 +70,24 @@ function customerBuy (){
             var stockQty = chosenItem.stock_quantity;
             // inform user if they have ordered more units than are available - log "insuffic qty" or something similar if not enough units available
             if (answer.unitBuy > chosenItem.stock_quantity) {
-                console.log ('Insufficient quantity!')
-                customerBuy();
+                console.log ('Insufficient quantity in stock! Your order cannot be fulfilled.');
+                inquirer
+                    .prompt([
+                    {
+                        type: 'confirm',
+                        message: 'Would you like to buy something else?',
+                        choices: ['Yes','No'],
+                        name: 'tryAgain'
+                    }]).then(function(ans){
+                        if (ans.tryAgain) {
+                            customerBuy(); 
+                        } else { 
+                            console.log ('Alright. Come again!') 
+                            }
+                    });
             } else {
                 stockQty = stockQty-answer.unitBuy;
-            }
+            
             // if enough units, update SQL database values
             connection.query('UPDATE products SET ? WHERE ?', [{
                 stock_quantity: stockQty
@@ -85,6 +98,7 @@ function customerBuy (){
                 if (err) {throw err};
                 console.log('The price of your order is $'+(answer.unitBuy*chosenItem.price));
             });
+        }
             connection.end();
         });
     })
