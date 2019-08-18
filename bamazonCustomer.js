@@ -21,7 +21,7 @@ function displayTable (){
             console.log(response[i].item_id+' || '+response[i].product_name+' || $'+response[i].price);
         }
 
-        connection.end();
+        //connection.end();
     });
     
 }
@@ -40,10 +40,10 @@ function customerBuy (){
                 // validation function to assure input is a proper ID number
                 validate: function(input){
                     // code
-                    if (Number.isInteger(input)) {
-                        continue;
-                    } else {
+                    if (isNaN(input)) {
                         return ('Please put in a vald ID number')
+                    } else {
+                        return true;
                     }
                 }
             },
@@ -53,9 +53,11 @@ function customerBuy (){
                 name: 'unitBuy',
                 // validation function to assure input is an integer
                 validate: function(input){
-                    // code
-                    if (Number.isInteger(input)) { continue }
-                    else { return 'Please put in a number' }
+                    if (isNaN(input)) {
+                        return ('Please put in a vald ID number')
+                    } else {
+                        return true;
+                    }
                 }
 
             }
@@ -67,7 +69,7 @@ function customerBuy (){
             var chosenItem = res[answer.userBuyItem - 1];
             var stockQty = chosenItem.stock_quantity;
             // inform user if they have ordered more units than are available - log "insuffic qty" or something similar if not enough units available
-            if (answer.unitBuy < chosenItem.stock_quantity) {
+            if (answer.unitBuy > chosenItem.stock_quantity) {
                 console.log ('Insufficient quantity!')
                 customerBuy();
             } else {
