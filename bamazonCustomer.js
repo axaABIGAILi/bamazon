@@ -12,52 +12,76 @@ var connection = mysql.createConnection({
     database: 'bamazon_db'
 });
 
+
 // display the full products table to user and store in a function
 function displayTable (){
     connection.query('SELECT item_id, product_name, price  FROM products', function(error, response){
         if (error) {throw error};
-        console.table(response)
-    });
+        for (var i=0; i < response.length; i++) {
+            console.log(response[i].item_id+' || '+response[i].product_name+' || $'+response[i].price);
+        }
 
-    connection.end();
+        connection.end();
+    });
+    
 }
-// run the function on app startup
+
 displayTable();
+setTimeout(customerBuy, 1000);
 
 // create a function for the buying process
 function customerBuy (){
-    // prompt with inquirer to
-    inquirer.prompt([
-        {
-            type: 'input',
-            message:'What would you like to buy?',
-            name: 'userBuyItem',
-            // validation function to assure input is a proper ID number
-            validate: function(input){
-                // code
+
+        inquirer.prompt([
+            {
+                type: 'input',
+                message:'Input the ID of the item you would like to buy:',
+                name: 'userBuyItem',
+                // validation function to assure input is a proper ID number
+                validate: function(input){
+                    // code
+                    if (Number.isInteger(input)) {
+                        continue;
+                    } else {
+                        return ('Please put in a vald ID number')
+                    }
+                }
+            },
+            {
+                type: 'input',
+                message: 'How many units would you like to buy?',
+                name: 'unitBuy',
+                // validation function to assure input is an integer
+                validate: function(input){
+                    // code
+                    if (Number.isInteger(input)) { continue }
+                    else { return 'Please put in a number' }
+                }
+
             }
-        },
-        {
-            type: 'input',
-            message: 'How many units would you like to buy?',
-            name: 'unitBuy',
-            // validation function to assure input is an integer
-            validate: function(input){
-                // code
-                if (Number.isInteger(input)) { continue }
-                else { return 'Please put in a valid number' }
+        ]).then(function(answer){
+            connection.query('SELECT * FROM products', function(error, res){
+                if (error) { throw error };
+
+            // store the corresponding item object in a variable
+            var chosenItem = res[answer.userBuyItem - 1];
+            var stockQty = chosenItem.stock_quantity;
+            // inform user if they have ordered more units than are available - log "insuffic qty" or something similar if not enough units available
+            if (answer.unitBuy < chosenItem.stock_quantity) {
+                console.log ('Insufficient quantity!')
+                customerBuy();
+            } else {
+                stockQty = stockQty-answer.unitBuy;
             }
-
-        }
-
-    ]).then(function(response){
-        // check user input versus database values
-
-        // inform user if they have ordered more units than are available - log "insuffic qty" or something similar if not enough units available
-
-        // if enough units, update SQL database values
-        // display total cost of order to user
-        // display updated items table (?)
-
+            // if enough units, update SQL database values
+            connection.query('UPDATE products SET ? WHERE ?', [{
+                stock_quantity: stockQty
+            }], function(err,res){
+                // display total cost of order to user
+                if (err) {throw err};
+                console.log('The price of your order is $'+(answer.unitBuy*chosenItem.price));
+            });
+            connection.end();
+        });
     })
 }
