@@ -2,14 +2,14 @@
 
 ![Bamazon Preview](preview.png)
 
-##System Requirements
+## System Requirements
 - GitBash or Terminal
 - NodeJS
 - MySQL
 - MySQL Workbecnh, Sequel Pro or comparable MySQL database interface
 - npm
 
-##Instructions
+## Instructions
 1. Input `git clone` + the repo's clone URL to clone the repository into your computer
 2. Use your terminal to navigate to the directory of the cloned repository and run `npm install` - the package.json will assure that all required modules are installed
 3. Open your preferred MySQL database manager and past in or import the code from `bamazon-products.sql`
