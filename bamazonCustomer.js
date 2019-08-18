@@ -83,7 +83,7 @@ function customerBuy (){
                             customerBuy(); 
                         } else { 
                             console.log ('Alright. Come again!') 
-                            }
+                            connection.end();}
                     });
             } else {
                 stockQty = stockQty-answer.unitBuy;
@@ -96,10 +96,11 @@ function customerBuy (){
             }], function(err,res){
                 // display total cost of order to user
                 if (err) {throw err};
-                console.log('The price of your order is $'+(answer.unitBuy*chosenItem.price));
+                console.log('The price of your order is $'+(answer.unitBuy*chosenItem.price+' - thank you for shopping with us!'));
+                connection.end();
             });
         }
-            connection.end();
+            
         });
     })
 }
