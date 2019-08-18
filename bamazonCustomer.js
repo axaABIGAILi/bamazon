@@ -20,24 +20,23 @@ function displayTable (){
         for (var i=0; i < response.length; i++) {
             console.log(response[i].item_id+' || '+response[i].product_name+' || $'+response[i].price);
         }
-
-        //connection.end();
     });
     
 }
-
+// Run displayTable first
 displayTable();
+// Prevent customerBuy from prematurely running with timeout
 setTimeout(customerBuy, 1000);
 
 // create a function for the buying process
 function customerBuy (){
-
+        // prompt customer to ask what items they want to order and how many
         inquirer.prompt([
             {
                 type: 'input',
                 message:'Input the ID of the item you would like to buy:',
                 name: 'userBuyItem',
-                // validation function to assure input is a proper ID number
+                // validation function to assure input is a number
                 validate: function(input){
                     // code
                     if (isNaN(input)) {
@@ -51,7 +50,7 @@ function customerBuy (){
                 type: 'input',
                 message: 'How many units would you like to buy?',
                 name: 'unitBuy',
-                // validation function to assure input is an integer
+                // validation function to assure input is a number
                 validate: function(input){
                     if (isNaN(input)) {
                         return ('Please put in a vald ID number')
@@ -68,9 +67,10 @@ function customerBuy (){
             // store the corresponding item object in a variable
             var chosenItem = res[answer.userBuyItem - 1];
             var stockQty = chosenItem.stock_quantity;
-            // inform user if they have ordered more units than are available - log "insuffic qty" or something similar if not enough units available
+            // inform user if they have ordered more units than are available 
             if (answer.unitBuy > chosenItem.stock_quantity) {
                 console.log ('Insufficient quantity in stock! Your order cannot be fulfilled.');
+                // ask user if they wish to make another purchase
                 inquirer
                     .prompt([
                     {
@@ -83,6 +83,7 @@ function customerBuy (){
                             customerBuy(); 
                         } else { 
                             console.log ('Alright. Come again!') 
+                            // end connection in teh case that user doesn't wish to continue with purchase process
                             connection.end();}
                     });
             } else {
@@ -97,6 +98,7 @@ function customerBuy (){
                 // display total cost of order to user
                 if (err) {throw err};
                 console.log('The price of your order is $'+(answer.unitBuy*chosenItem.price+' - thank you for shopping with us!'));
+                // end connection in the case of a successful purchase
                 connection.end();
             });
         }
