@@ -78,6 +78,8 @@ function customerBuy (){
             // if enough units, update SQL database values
             connection.query('UPDATE products SET ? WHERE ?', [{
                 stock_quantity: stockQty
+            }, {
+                item_id: answer.userBuyItem
             }], function(err,res){
                 // display total cost of order to user
                 if (err) {throw err};
